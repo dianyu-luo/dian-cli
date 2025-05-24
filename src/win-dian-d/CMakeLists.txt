@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(win-dian-dd)
+project(win-dian-d)
 
 # 设置 C++ 标准
 set(CMAKE_CXX_STANDARD 17)
