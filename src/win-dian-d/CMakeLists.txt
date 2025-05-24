@@ -13,4 +13,5 @@ file(GLOB SOURCES
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
 
