@@ -44,14 +44,6 @@ add_subdirectory(test)
 
 # include_directories(include)
 
-
-# add_executable(hello_test test/hello_test.cc)
-# target_link_libraries(hello_test doctest::doctest spdlog::spdlog)
-
-# add_executable(simple_test test/simple_test.cc)
-# target_link_libraries(simple_test doctest::doctest)
-
-
 # # 通用工具
 # add_executable(dian-cli src/main.cpp src/foo.cpp)
 # target_link_libraries(dian-cli  spdlog::spdlog spdlog::spdlog)
