@@ -8,3 +8,4 @@
 /.vs 
 /.cache/clangd/index
 /vcpkg/
+**/build/*
