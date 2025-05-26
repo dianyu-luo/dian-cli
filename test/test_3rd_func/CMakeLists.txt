@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"  CACHE STRING "vcpkg toolchain file")
 
 project(test_3rd_func)
 # enable_testing()
