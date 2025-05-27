@@ -6,7 +6,7 @@ gcc -o dianswitch.exe dianswitch.c
 #include <windows.h>
 char *convertToGbk(wchar_t *utf16_str)
 {
-    char gbk_str[1024];
+    char *gbk_str = (char *)malloc(1024);
     WideCharToMultiByte(CP_ACP, 0, utf16_str, 1024, gbk_str, 1024, NULL, NULL);
     return gbk_str;
 }
