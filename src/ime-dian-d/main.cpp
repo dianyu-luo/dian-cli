@@ -112,9 +112,50 @@ std::string get_config_path()
     filename = parent_path.string() + "\\" + filename;
     return filename;
 }
+bool GetExecutablePath(TCHAR *path, DWORD bufferSize)
+{
+    return GetModuleFileName(NULL, path, bufferSize) > 0;
+}
+// 将程序路径写入注册表的开机启动项
+bool AddToStartup()
+{
+    HKEY hKey;
+    TCHAR exePath[MAX_PATH];
+
+    // 获取当前程序的完整路径
+    if (!GetExecutablePath(exePath, MAX_PATH))
+    {
+        std::cerr << "Failed to get executable path!" << std::endl;
+        return false;
+    }
+
+    // 打开注册表中的启动项键
+    LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"), 0,
+                               KEY_SET_VALUE, &hKey);
+    if (result != ERROR_SUCCESS)
+    {
+        std::cerr << "Failed to open registry key!" << std::endl;
+        return false;
+    }
+
+    // 设置注册表值（程序名称和路径）
+    result =
+        RegSetValueEx(hKey, _T("ime-dian-d"), 0, REG_SZ, (BYTE *)exePath, (_tcslen(exePath) + 1) * sizeof(TCHAR));
+    RegCloseKey(hKey);
+
+    if (result != ERROR_SUCCESS)
+    {
+        std::cerr << "Failed to write to registry!" << std::endl;
+        return false;
+    }
+
+    std::cout << "Successfully added to startup items!" << std::endl;
+    return true;
+}
 
 int main(int argc, char const *argv[])
 {
+    AddToStartup();
     std::string filename = get_config_path();
     std::ifstream file(filename);
     nlohmann::json root;
@@ -122,6 +163,8 @@ int main(int argc, char const *argv[])
 
     // std::thread t(restartWin);
     // t.detach();
+    // 把当前程序注册为开机自启动
+    // 注册到注册表中
 
     if (file.fail())
     {

@@ -13,4 +13,5 @@ find_package(nlohmann_json CONFIG REQUIRED)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE imm32 psapi shlwapi nlohmann_json::nlohmann_json)
+target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
 
