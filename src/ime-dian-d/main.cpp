@@ -2,6 +2,7 @@
 #include <Shlwapi.h>
 #include <WinUser.h>
 #include <Windows.h> // Windows API 核心函数和数据类型。
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -11,9 +12,9 @@
 #include <string>
 #include <tchar.h> // TCHAR 类型及相关函数。
 #include <thread>
+
 // Global variable.
 HWINEVENTHOOK g_hook;
-std::string filename = "config_ime.json";
 std::set<std::string> softwareset;
 
 VOID CALLBACK WinEventsProc(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild,
@@ -98,13 +99,29 @@ void restartWin()
     // }
 }
 
+// 通过可执行文件的相对路径获取当前可执行文件的路径
+std::string get_config_path()
+{
+    std::string filename = "config_ime.json";
+
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    std::filesystem::path exeFilePath(exePath);
+    std::filesystem::path parent_path = exeFilePath.parent_path();
+    std::string parent_path_str = exeFilePath.string();
+    filename = parent_path.string() + "\\" + filename;
+    return filename;
+}
+
 int main(int argc, char const *argv[])
 {
+    std::string filename = get_config_path();
     std::ifstream file(filename);
     nlohmann::json root;
+    // return 0;
 
-    std::thread t(restartWin);
-    t.detach();
+    // std::thread t(restartWin);
+    // t.detach();
 
     if (file.fail())
     {

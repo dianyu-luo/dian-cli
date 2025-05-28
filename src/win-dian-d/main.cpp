@@ -28,9 +28,15 @@ int main(int argc, char const *argv[])
         char title[512];
 
         int len = WideCharToMultiByte(CP_UTF8, 0, wtitle, -1, title, sizeof(title), NULL, NULL);
+        // 获得窗口的其他信息
+
+        wchar_t wclassname[256];
+        GetClassNameW(hwnd, wclassname, sizeof(wclassname) / sizeof(wchar_t));
+        char classname[512];
+        len = WideCharToMultiByte(CP_UTF8, 0, wclassname, -1, classname, sizeof(classname), NULL, NULL);
 
         // 记录日志
-        log << "Active window: " << title << endl;
+        log << "Active window: " << title << ":" << classname << endl;
 
         // 等待一段时间
         Sleep(1000);
