@@ -2,6 +2,7 @@
   "software": [
     "switcheroo.exe",
     "SearchApp.exe",
+    "SearchHost.exe",
     "PotPlayerMini64.exe"
   ]
 }

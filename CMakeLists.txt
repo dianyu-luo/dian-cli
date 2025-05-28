@@ -3,7 +3,9 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.c
 
 
 project(dian-cli)
-
+if(MSVC)
+    add_compile_options("/source-charset:utf-8" "/execution-charset:utf-8")
+endif()
 add_subdirectory(src)
 add_subdirectory(test)
 
