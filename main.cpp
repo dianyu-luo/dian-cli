@@ -139,8 +139,7 @@ bool AddToStartup()
     }
 
     // 设置注册表值（程序名称和路径）
-    result =
-        RegSetValueEx(hKey, _T("ime-dian-d"), 0, REG_SZ, (BYTE *)exePath, (_tcslen(exePath) + 1) * sizeof(TCHAR));
+    result = RegSetValueEx(hKey, _T("ime-dian-d"), 0, REG_SZ, (BYTE *)exePath, (_tcslen(exePath) + 1) * sizeof(TCHAR));
     RegCloseKey(hKey);
 
     if (result != ERROR_SUCCESS)
@@ -171,6 +170,7 @@ int main(int argc, char const *argv[])
         // 如果配置文件不存在退出
         std::cout << filename << " doesn't exist, creating new JSON file" << std::endl;
         root["software"] = nlohmann::json::array();
+        root["software"].push_back("switcheroo.exe");
         std::ofstream outfile(filename);
         outfile << root.dump(4) << std::endl;
         outfile.close();
