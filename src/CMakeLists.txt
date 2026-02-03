@@ -1,6 +1,0 @@
-add_subdirectory(ime-dian-d)
-add_subdirectory(win-dian-d)
-add_subdirectory(zenhan)
-add_subdirectory(dianswitch)
-add_subdirectory(win-dian-cli)
-add_subdirectory(gui)

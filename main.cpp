@@ -2,18 +2,19 @@
 #include <Shlwapi.h>
 #include <WinUser.h>
 #include <Windows.h> // Windows API 核心函数和数据类型。
+#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 #include <oleacc.h> // MSAA（Microsoft Active Accessibility）API。
 #include <psapi.h>
 #include <set>
 #include <string>
 #include <tchar.h> // TCHAR 类型及相关函数。
 #include <thread>
+
 // Global variable.
 HWINEVENTHOOK g_hook;
-std::string filename = "config_ime.json";
 std::set<std::string> softwareset;
 
 VOID CALLBACK WinEventsProc(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild,
@@ -42,11 +43,11 @@ VOID CALLBACK WinEventsProc(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwn
                     auto ime = ImmGetDefaultIMEWnd(hwnd);
                     LPARAM stat;
                     stat = SendMessage(ime, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0);
-                    std::printf("init ime state: %d\n", stat);
+                    std::printf("init ime state: %lld\n", stat);
                     SendMessage(ime, WM_IME_CONTROL, IMC_SETOPENSTATUS, 0);
                     stat = SendMessage(ime, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0);
 
-                    std::printf("current ime state: %d\n\n", stat);
+                    std::printf("current ime state: %lld\n\n", stat);
                     // 存在
                 }
                 else
@@ -98,13 +99,72 @@ void restartWin()
     // }
 }
 
+// 通过可执行文件的相对路径获取当前可执行文件的路径
+std::string get_config_path()
+{
+    std::string filename = "config_ime.json";
+
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    std::filesystem::path exeFilePath(exePath);
+    std::filesystem::path parent_path = exeFilePath.parent_path();
+    std::string parent_path_str = exeFilePath.string();
+    filename = parent_path.string() + "\\" + filename;
+    return filename;
+}
+bool GetExecutablePath(TCHAR *path, DWORD bufferSize)
+{
+    return GetModuleFileName(NULL, path, bufferSize) > 0;
+}
+// 将程序路径写入注册表的开机启动项
+bool AddToStartup()
+{
+    HKEY hKey;
+    TCHAR exePath[MAX_PATH];
+
+    // 获取当前程序的完整路径
+    if (!GetExecutablePath(exePath, MAX_PATH))
+    {
+        std::cerr << "Failed to get executable path!" << std::endl;
+        return false;
+    }
+
+    // 打开注册表中的启动项键
+    LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"), 0,
+                               KEY_SET_VALUE, &hKey);
+    if (result != ERROR_SUCCESS)
+    {
+        std::cerr << "Failed to open registry key!" << std::endl;
+        return false;
+    }
+
+    // 设置注册表值（程序名称和路径）
+    result =
+        RegSetValueEx(hKey, _T("ime-dian-d"), 0, REG_SZ, (BYTE *)exePath, (_tcslen(exePath) + 1) * sizeof(TCHAR));
+    RegCloseKey(hKey);
+
+    if (result != ERROR_SUCCESS)
+    {
+        std::cerr << "Failed to write to registry!" << std::endl;
+        return false;
+    }
+
+    std::cout << "Successfully added to startup items!" << std::endl;
+    return true;
+}
+
 int main(int argc, char const *argv[])
 {
+    AddToStartup();
+    std::string filename = get_config_path();
     std::ifstream file(filename);
     nlohmann::json root;
+    // return 0;
 
-    std::thread t(restartWin);
-    t.detach();
+    // std::thread t(restartWin);
+    // t.detach();
+    // 把当前程序注册为开机自启动
+    // 注册到注册表中
 
     if (file.fail())
     {
