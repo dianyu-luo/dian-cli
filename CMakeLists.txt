@@ -5,6 +5,7 @@ project(dian-cli)
 if(MSVC)
     add_compile_options("/source-charset:utf-8" "/execution-charset:utf-8")
 endif()
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
